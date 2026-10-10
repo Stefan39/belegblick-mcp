@@ -28,6 +28,8 @@ See [ADR 0001](docs/adr/0001-architecture.md).
 - Data returned by a tool is sent to the model provider of your MCP client (e.g. Anthropic for
   Claude Desktop). Only use it with accounts whose data you may share with that provider.
 
+Found a security problem? Please report it privately, see [SECURITY.md](SECURITY.md).
+
 Use of the Lexware API is governed by the
 [Public API Lizenz- und Nutzungsbedingungen](https://agb.lexware.de/lexware-office/public-api-lizenz--und-nutzungsbedingungen).
 
@@ -82,10 +84,11 @@ composer check   # php-cs-fixer (dry run), PHPStan level 8, PHPUnit
 make cpd         # duplication check (needs Node/npx)
 ```
 
-Debug the server interactively with the MCP Inspector:
+Debug the server interactively with the MCP Inspector. The Inspector starts the server with a
+minimal environment, so pass the key with `-e`; a variable set in your shell does not reach it:
 
 ```bash
-LEXWARE_API_KEY=... npx @modelcontextprotocol/inspector php bin/belegblick-mcp
+npx @modelcontextprotocol/inspector -e LEXWARE_API_KEY=your-api-key php bin/belegblick-mcp
 ```
 
 Tests never touch the real API; they use Symfony's `MockHttpClient` and `MockClock`.

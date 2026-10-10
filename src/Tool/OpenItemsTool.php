@@ -14,7 +14,12 @@ use Psr\Clock\ClockInterface;
 /**
  * Lists unpaid sales invoices (open and overdue) from the Lexware Office voucher list.
  *
- * @phpstan-type OpenItem array{id: string, voucherNumber: string, contactName: string, voucherDate: ?string, dueDate: ?string, totalAmount: float, openAmount: float, currency: string, status: string, overdue: bool, daysOverdue: int}
+ * Covers both invoice types: "invoice" (written in Lexware) and "salesinvoice" (booked
+ * bookkeeping voucher, e.g. an uploaded PDF). Only status "open" is requested: Lexware rejects
+ * "overdue" combined with other statuses (HTTP 400) and returns overdue invoices as "overdue"
+ * within "open" anyway.
+ *
+ * @phpstan-type OpenItem array{id: string, voucherType: string, voucherNumber: string, contactName: string, voucherDate: ?string, dueDate: ?string, totalAmount: float, openAmount: float, currency: string, status: string, overdue: bool, daysOverdue: int}
  * @phpstan-type OpenItemsResult array{asOf: string, count: int, overdueCount: int, totalsByCurrency: array<string, array{open: float, overdue: float}>, complete: bool, note: string, items: list<OpenItem>}
  */
 final readonly class OpenItemsTool
@@ -27,7 +32,8 @@ final readonly class OpenItemsTool
     private const int PAGE_SIZE = 250;
 
     private const string NOTE = 'Amounts are gross (incl. VAT) as delivered by the Lexware voucher list. '
-        . 'Only sales invoices are included; down payment invoices and credit notes are not.';
+        . 'Includes invoices written in Lexware and booked sales vouchers; down payment invoices, credit notes '
+        . 'and invoices collected by SEPA direct debit are not included.';
 
     public function __construct(
         private LexwareClient $client,
@@ -81,8 +87,8 @@ final readonly class OpenItemsTool
         $vouchers = [];
         for ($page = 0; $page < $this->maxPages; ++$page) {
             $response = $this->filter->filter($this->client->getJson('/v1/voucherlist', [
-                'voucherType' => 'salesinvoice',
-                'voucherStatus' => 'open,overdue',
+                'voucherType' => 'invoice,salesinvoice',
+                'voucherStatus' => 'open',
                 'page' => $page,
                 'size' => self::PAGE_SIZE,
             ]));
@@ -111,6 +117,7 @@ final readonly class OpenItemsTool
 
         return [
             'id' => self::string($voucher, 'id'),
+            'voucherType' => self::string($voucher, 'voucherType'),
             'voucherNumber' => self::string($voucher, 'voucherNumber'),
             'contactName' => self::string($voucher, 'contactName'),
             'voucherDate' => self::date($voucher, 'voucherDate')?->format('Y-m-d'),
