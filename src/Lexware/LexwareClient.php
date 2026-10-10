@@ -61,7 +61,7 @@ final readonly class LexwareClient
             $statusCode = $response->getStatusCode();
             if (200 !== $statusCode) {
                 return new FailedAttempt(
-                    LexwareApiException::fromStatus($statusCode, $path),
+                    LexwareApiException::fromStatus($statusCode, $path, LexwareErrorBody::describe($response->getContent(false))),
                     $statusCode,
                     self::parseRetryAfter($response->getHeaders(false)['retry-after'][0] ?? null),
                 );

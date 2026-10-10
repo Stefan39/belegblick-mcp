@@ -18,11 +18,19 @@ final class LexwareApiException extends \RuntimeException
         parent::__construct($message, 0, $previous);
     }
 
-    public static function fromStatus(int $statusCode, string $path): self
+    /**
+     * @param ?string $apiMessage Error text from Lexware's response body; preferred over the generic hint
+     */
+    public static function fromStatus(int $statusCode, string $path, ?string $apiMessage = null): self
     {
-        $hint = self::HINTS[$statusCode] ?? ($statusCode >= 500 ? 'Lexware Office is currently unavailable' : 'unexpected response');
+        $hint = self::HINTS[$statusCode] ?? ($statusCode >= 500 ? 'Lexware Office is currently unavailable' : null);
+        $reason = match (true) {
+            null === $apiMessage => ($hint ?? 'unexpected response') . '.',
+            null === $hint => $apiMessage,
+            default => $hint . '. Lexware: ' . $apiMessage,
+        };
 
-        return new self(\sprintf('Lexware Office API returned HTTP %d for %s: %s.', $statusCode, $path, $hint), $statusCode);
+        return new self(\sprintf('Lexware Office API returned HTTP %d for %s: %s', $statusCode, $path, $reason), $statusCode);
     }
 
     public static function transportFailure(string $path, \Throwable $previous): self

@@ -60,7 +60,9 @@ up to 3 attempts with exponential backoff (1 s, 2 s), respecting a numeric `Retr
 
 | Pitfall | Handling |
 |---|---|
-| Sales invoices have voucher type `salesinvoice` (not `invoice`) in the voucher list | `open_items` queries `voucherType=salesinvoice`. |
+| Two voucher types for sales invoices: `invoice` (written in Lexware) and `salesinvoice` (booked bookkeeping voucher, e.g. uploaded PDF). Querying only one misses invoices. | `open_items` queries `voucherType=invoice,salesinvoice` and returns `voucherType` per item. Corrected 2026-10-10 after the first live test; the first version queried only `salesinvoice`. |
+| `voucherStatus=overdue` cannot be combined with other statuses: HTTP 400. `overdue` is transient and is returned for `open`/`sepadebit` vouchers past their due date. | `open_items` queries `voucherStatus=open` only and derives "overdue" from the returned status and the due date. Found in the first live test (HTTP 400). |
+| Lexware's error body explains a 4xx (`message`, `details[].field/message`, `traceId`) | `LexwareErrorBody` puts it into the tool error so the cause is visible without debugging. |
 | The voucher list only carries **gross** amounts; net amounts and tax breakdown exist only in the voucher detail | `open_items` labels every amount as gross (`note` field). Net figures are the job of `voucher_detail` / `revenue`. |
 | Detail endpoints differ per voucher type (`/v1/invoices/{id}`, `/v1/credit-notes/{id}`, `/v1/down-payment-invoices/{id}`, `/v1/vouchers/{id}` for bookkeeping vouchers ...) | Planned `voucher_detail` maps `voucherType` to endpoint in one place. |
 | Rate limit 2 req/s, 429 on excess | Throttle + retry (see 3). Pagination with `size=250` (maximum) keeps request counts low; `open_items` stops after 10 pages and reports `complete: false`. |
@@ -70,7 +72,7 @@ up to 3 attempts with exponential backoff (1 s, 2 s), respecting a numeric `Retr
 
 | Tool | Endpoint(s) | Status |
 |---|---|---|
-| `open_items`: unpaid sales invoices, overdue flag, days overdue, totals per currency, filters `overdueOnly`, `contact` | `GET /v1/voucherlist?voucherType=salesinvoice&voucherStatus=open,overdue` | **implemented** |
+| `open_items`: unpaid sales invoices, overdue flag, days overdue, totals per currency, filters `overdueOnly`, `contact` | `GET /v1/voucherlist?voucherType=invoice,salesinvoice&voucherStatus=open` | **implemented** |
 | `search_vouchers`: by type, status, date range, contact, number | `GET /v1/voucherlist` | planned |
 | `voucher_detail`: line items, net/tax/gross | type-specific detail endpoints | planned |
 | `search_contacts`: by name, email, number (no bank data) | `GET /v1/contacts` | planned |
