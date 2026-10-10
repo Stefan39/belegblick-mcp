@@ -10,7 +10,7 @@ Ask Claude things like *"Which invoices are overdue?"* and get answers straight 
 
 ## Status
 
-Early development (v0.1). Currently available tool:
+v0.1.0, early but usable. See the [changelog](CHANGELOG.md). Currently available tool:
 
 | Tool | What it does |
 |---|---|
@@ -42,32 +42,60 @@ Use of the Lexware API is governed by the
 ## Installation
 
 ```bash
-git clone <repository-url> belegblick-mcp
+git clone --branch v0.1.0 https://github.com/Stefan39/belegblick-mcp.git
 cd belegblick-mcp
 composer install --no-dev
 ```
 
+To update later: `git fetch --tags && git checkout <new-tag> && composer install --no-dev`.
+
 ## Use with Claude Desktop
 
-Add the server to `claude_desktop_config.json`
-(macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`):
+Claude Desktop starts the server itself. You add **one entry** under `mcpServers` in
+`claude_desktop_config.json`:
+
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+The file usually contains other settings already. Do not paste a second `{ ... }` block at the end:
+add the `"belegblick"` entry inside the existing `"mcpServers"` object, or create
+`"mcpServers"` as a new top-level key if it is missing. Check the result with
+`python3 -m json.tool claude_desktop_config.json` before restarting Claude Desktop.
+
+### macOS (recommended): API key from the Keychain
+
+Store the key once; the command prompts for it, so it never ends up in your shell history:
+
+```bash
+security add-generic-password -s belegblick -a lexware -w
+```
+
+Entry for `mcpServers` (adjust both paths; `which php` shows yours):
 
 ```json
-{
-  "mcpServers": {
-    "belegblick": {
-      "command": "php",
-      "args": ["/absolute/path/to/belegblick-mcp/bin/belegblick-mcp"],
-      "env": {
-        "LEXWARE_API_KEY": "your-api-key"
-      }
-    }
+"belegblick": {
+  "command": "/bin/sh",
+  "args": ["-c", "LEXWARE_API_KEY=$(security find-generic-password -s belegblick -w) exec /opt/homebrew/bin/php /absolute/path/to/belegblick-mcp/bin/belegblick-mcp"]
+}
+```
+
+### Other systems: API key in the config
+
+```json
+"belegblick": {
+  "command": "php",
+  "args": ["/absolute/path/to/belegblick-mcp/bin/belegblick-mcp"],
+  "env": {
+    "LEXWARE_API_KEY": "your-api-key"
   }
 }
 ```
 
-Use the absolute path to `php` (`which php`) if Claude Desktop does not find it. Restart Claude
-Desktop, then ask: *"Welche Rechnungen sind überfällig?"*
+The key is then stored in plain text in that file; keep it private.
+
+Quit Claude Desktop completely, start it again and ask: *"Welche Rechnungen sind überfällig?"*
+If the server does not show up, check the log
+(macOS: `~/Library/Logs/Claude/mcp-server-belegblick.log`).
 
 ### Configuration
 

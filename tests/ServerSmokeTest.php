@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jacomeit\Belegblick\Tests;
 
+use Jacomeit\Belegblick\ServerFactory;
 use PHPUnit\Framework\TestCase;
 
 final class ServerSmokeTest extends TestCase
@@ -23,6 +24,7 @@ final class ServerSmokeTest extends TestCase
         ], 2);
 
         self::assertSame('belegblick-mcp', $responses[1]['result']['serverInfo']['name'] ?? null);
+        self::assertSame(ServerFactory::VERSION, $responses[1]['result']['serverInfo']['version'] ?? null);
 
         $tools = array_column($responses[2]['result']['tools'] ?? [], null, 'name');
         self::assertSame(['open_items'], array_keys($tools));
