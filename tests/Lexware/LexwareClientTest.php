@@ -81,6 +81,33 @@ final class LexwareClientTest extends TestCase
         self::assertSame(1, $http->getRequestsCount());
     }
 
+    public function testClientErrorCarriesLexwareMessageAndValidationDetails(): void
+    {
+        $body = '{"status":406,"error":"Not Acceptable","path":"/v1/voucherlist","traceId":"90d78d0777be",'
+            . '"message":"Validation failed for request.","details":[{"violation":"NOTNULL","field":"voucherType","message":"darf nicht leer sein"}]}';
+        $http = new MockHttpClient([new MockResponse($body, ['http_code' => 406])], 'https://api.example.test');
+
+        try {
+            $this->createClient($http)->getJson('/v1/voucherlist');
+            self::fail('Expected LexwareApiException');
+        } catch (LexwareApiException $exception) {
+            self::assertSame(406, $exception->statusCode);
+            self::assertStringContainsString('Validation failed for request.', $exception->getMessage());
+            self::assertStringContainsString('voucherType: darf nicht leer sein', $exception->getMessage());
+            self::assertStringContainsString('traceId 90d78d0777be', $exception->getMessage());
+        }
+    }
+
+    public function testLegacyOrNonJsonErrorBodyFallsBackToHint(): void
+    {
+        $http = new MockHttpClient([new MockResponse('<html>Bad Request</html>', ['http_code' => 400])], 'https://api.example.test');
+
+        $this->expectException(LexwareApiException::class);
+        $this->expectExceptionMessage('Lexware Office API returned HTTP 400 for /v1/voucherlist: unexpected response.');
+
+        $this->createClient($http)->getJson('/v1/voucherlist');
+    }
+
     public function testTransportErrorsAreRetried(): void
     {
         $http = new MockHttpClient([

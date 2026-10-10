@@ -2,7 +2,7 @@
   "content": [
     {
       "id": "a1b2c3d4-0000-0000-0000-000000000001",
-      "voucherType": "salesinvoice",
+      "voucherType": "invoice",
       "voucherStatus": "overdue",
       "voucherNumber": "RE-2026-0101",
       "voucherDate": "2026-08-01T00:00:00.000+02:00",

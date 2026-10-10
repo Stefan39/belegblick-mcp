@@ -32,13 +32,13 @@ final class OpenItemsToolTest extends TestCase
         self::assertStringContainsString('gross', $result['note']);
     }
 
-    public function testRequestsOnlyOpenAndOverdueSalesInvoices(): void
+    public function testRequestsOpenInvoicesOfBothInvoiceTypes(): void
     {
         $this->createTool($this->bothPages())();
 
         self::assertSame('/v1/voucherlist', parse_url($this->responses[0]->getRequestUrl(), PHP_URL_PATH));
-        self::assertSame('salesinvoice', $this->queryValue(0, 'voucherType'));
-        self::assertSame('open,overdue', $this->queryValue(0, 'voucherStatus'));
+        self::assertSame('invoice,salesinvoice', $this->queryValue(0, 'voucherType'));
+        self::assertSame('open', $this->queryValue(0, 'voucherStatus'));
         self::assertSame('0', $this->queryValue(0, 'page'));
         self::assertSame('1', $this->queryValue(1, 'page'));
     }
@@ -54,6 +54,14 @@ final class OpenItemsToolTest extends TestCase
         self::assertFalse($items['RE-2026-0102']['overdue']);
         self::assertSame(0, $items['RE-2026-0102']['daysOverdue']);
         self::assertSame('2026-10-20', $items['RE-2026-0102']['dueDate']);
+    }
+
+    public function testKeepsVoucherTypeBecauseDetailEndpointsDifferPerType(): void
+    {
+        $items = $this->indexByNumber($this->createTool($this->bothPages())()['items']);
+
+        self::assertSame('invoice', $items['RE-2026-0101']['voucherType']);
+        self::assertSame('salesinvoice', $items['RE-2026-0102']['voucherType']);
     }
 
     public function testFiltersOverdueOnlyAndByContactName(): void
@@ -85,9 +93,12 @@ final class OpenItemsToolTest extends TestCase
     public function testApiFailureBecomesToolError(): void
     {
         $this->expectException(ToolCallException::class);
-        $this->expectExceptionMessageMatches('/401/');
+        $this->expectExceptionMessageMatches('/400.*status overdue can not be combined/');
 
-        $this->createTool([new MockResponse('', ['http_code' => 401])])();
+        $this->createTool([new MockResponse(
+            '{"status":400,"error":"Bad Request","path":"/v1/voucherlist","message":"status overdue can not be combined"}',
+            ['http_code' => 400],
+        )])();
     }
 
     /**
