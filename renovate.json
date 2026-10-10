@@ -1,0 +1,72 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended",
+        "helpers:pinGitHubActionDigestsToSemver"
+    ],
+    "timezone": "Europe/Berlin",
+    "schedule": ["before 6am on monday"],
+    "prConcurrentLimit": 3,
+    "semanticCommits": "enabled",
+    "labels": ["dependencies"],
+    "dependencyDashboard": true,
+    "vulnerabilityAlerts": {
+        "enabled": true,
+        "schedule": ["at any time"],
+        "labels": ["dependencies", "security"]
+    },
+    "packageRules": [
+        {
+            "description": "mcp/sdk is experimental until 1.0; every minor may break. Review manually, never automerge.",
+            "matchPackageNames": ["mcp/sdk"],
+            "automerge": false,
+            "labels": ["dependencies", "mcp-sdk"]
+        },
+        {
+            "description": "Symfony components grouped.",
+            "matchManagers": ["composer"],
+            "matchPackageNames": ["symfony/**"],
+            "groupName": "symfony",
+            "semanticCommitScope": "symfony"
+        },
+        {
+            "description": "PHP dev tooling grouped; patches automerge on green CI.",
+            "matchManagers": ["composer"],
+            "matchDepTypes": ["require-dev"],
+            "groupName": "php-dev-tooling",
+            "semanticCommitScope": "dev"
+        },
+        {
+            "matchManagers": ["composer"],
+            "matchDepTypes": ["require-dev"],
+            "matchUpdateTypes": ["patch"],
+            "automerge": true
+        },
+        {
+            "description": "GitHub Actions version updates grouped.",
+            "matchManagers": ["github-actions"],
+            "matchUpdateTypes": ["major", "minor", "patch"],
+            "groupName": "github-actions",
+            "semanticCommitScope": "ci"
+        },
+        {
+            "description": "GitHub Actions digest updates in their own branch so they do not collide with version updates.",
+            "matchManagers": ["github-actions"],
+            "matchUpdateTypes": ["digest", "pin", "pinDigest"],
+            "groupName": "github-actions-digests",
+            "semanticCommitScope": "ci"
+        }
+    ],
+    "customManagers": [
+        {
+            "customType": "regex",
+            "description": "jscpd version in the Makefile (make cpd).",
+            "managerFilePatterns": ["/^Makefile$/"],
+            "matchStrings": [
+                "# renovate: datasource=npm depName=(?<depName>jscpd)\\s*JSCPD_VERSION := (?<currentValue>[^\\s]+)"
+            ],
+            "datasourceTemplate": "npm",
+            "versioningTemplate": "npm"
+        }
+    ]
+}

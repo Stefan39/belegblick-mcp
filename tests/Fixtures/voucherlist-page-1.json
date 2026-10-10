@@ -1,0 +1,27 @@
+{
+  "content": [
+    {
+      "id": "a1b2c3d4-0000-0000-0000-000000000003",
+      "voucherType": "salesinvoice",
+      "voucherStatus": "open",
+      "voucherNumber": "RE-2026-0090",
+      "voucherDate": "2026-09-01T00:00:00.000+02:00",
+      "createdDate": "2026-09-01T10:00:00.000+02:00",
+      "updatedDate": "2026-09-01T10:00:00.000+02:00",
+      "dueDate": "2026-10-05T00:00:00.000+02:00",
+      "contactId": "c0000000-0000-0000-0000-000000000001",
+      "contactName": "ACME GmbH",
+      "totalAmount": 0.30,
+      "openAmount": 0.30,
+      "currency": "EUR",
+      "archived": false
+    }
+  ],
+  "first": false,
+  "last": true,
+  "totalPages": 2,
+  "totalElements": 3,
+  "numberOfElements": 1,
+  "size": 2,
+  "number": 1
+}

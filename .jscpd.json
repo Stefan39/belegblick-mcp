@@ -1,0 +1,10 @@
+{
+  "path": ["src", "tests", "bin"],
+  "format": ["php"],
+  "mode": "weak",
+  "minTokens": 100,
+  "minLines": 10,
+  "threshold": 1,
+  "gitignore": true,
+  "reporters": ["console"]
+}

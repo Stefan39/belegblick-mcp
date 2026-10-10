@@ -1,0 +1,8 @@
+/vendor/
+/.phpunit.cache/
+/.php-cs-fixer.cache
+/.env
+/.env.local
+/coverage/
+.DS_Store
+/.idea/
