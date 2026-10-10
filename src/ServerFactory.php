@@ -18,7 +18,7 @@ final class ServerFactory
 {
     public const string NAME = 'belegblick-mcp';
 
-    public const string VERSION = '0.1.0-dev';
+    public const string VERSION = '0.1.0';
 
     private const string INSTRUCTIONS = 'Belegblick: unofficial, read-only access to a Lexware Office (formerly lexoffice) account. '
         . 'Not affiliated with Haufe Group. Bank details are never returned.';
