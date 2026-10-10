@@ -120,9 +120,11 @@ Source: "Public API Lizenz- und Nutzungsbedingungen", Stand August 2026,
 
 This is an engineering reading, not legal advice.
 
-## Open before the first public release
+## Open before the first public release (status at v0.1.0)
 
-- Trademark search for "Belegblick" (DPMA/EUIPO) and domain availability; not done yet.
+- ~~Trademark search for "Belegblick"~~ Done 2026-10-10: no hit in the DPMA/TMview search (Stefan).
+  `belegblick.de` is registered with nameservers at Buhl Data and redirects to buhl.de (probably a
+  defensive registration); `belegblick.com` was free. Accepted as residual risk (JAC-705).
 - README disclaimer: "Unofficial. Not affiliated with Haufe Group. Lexware and lexoffice are
   trademarks of Haufe Group." (in place).
 - Packagist name and distribution (Composer global install vs. PHAR).
