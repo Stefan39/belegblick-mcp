@@ -1,5 +1,11 @@
 # lexware-php-mcp
 
+[English](README.md) | [Deutsch](README.de.md)
+
+[![CI](https://github.com/Stefan39/lexware-php-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Stefan39/lexware-php-mcp/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![PHP 8.4+](https://img.shields.io/badge/php-8.4%2B-777bb4.svg)
+
 > **Unofficial.** Not affiliated with Haufe Group. Lexware and lexoffice are trademarks of Haufe Group.
 
 lexware-php-mcp is an unofficial, read-only [Model Context Protocol](https://modelcontextprotocol.io) server for
@@ -7,6 +13,29 @@ lexware-php-mcp is an unofficial, read-only [Model Context Protocol](https://mod
 official [PHP MCP SDK](https://github.com/modelcontextprotocol/php-sdk).
 
 Ask Claude things like *"Which invoices are overdue?"* and get answers straight from your account.
+
+## Why a PHP server?
+
+The existing Lexware MCP servers are written in TypeScript or Python. This one is the PHP-native option, and
+that is the point: it is not a claim that PHP is technically better, but that PHP shops should not need a second
+runtime to give an AI assistant access to their bookkeeping.
+
+- **One runtime you already run.** PHP 8.4 and Composer, nothing else. No Node.js or Python toolchain, no
+  `npx` downloading code at startup.
+- **Small enough to audit.** The server has three runtime dependencies (`mcp/sdk`, `symfony/http-client`,
+  `symfony/clock`) and a handful of classes. Anyone handing an AI access to accounting data can read all of it
+  in an afternoon. It is checked with PHPStan level 8 including strict rules.
+- **Built for the German Mittelstand stack.** Many agencies, freelancers and in-house IT teams around Lexware
+  work in PHP (Symfony, Laravel, WordPress, Shopware). Tools are plain classes, so they can later move into a
+  Symfony application via `symfony/mcp-bundle` (see [ADR 0001](docs/adr/0001-architecture.md)).
+- **Lexware pitfalls handled, not left to you.** Invoices written in Lexware and booked sales vouchers are two
+  different voucher types; the server queries both. Lexware's 2 requests per second limit is throttled, and
+  Lexware's error messages are passed through so a failure is explainable.
+
+## Example questions
+
+- *Which invoices are overdue, and by how many days?*
+- *Show open invoices for customer Müller, with totals per currency.*
 
 ## Status
 
@@ -93,11 +122,23 @@ Entry for `mcpServers` (adjust both paths; `which php` shows yours):
 
 The key is then stored in plain text in that file; keep it private.
 
-Quit Claude Desktop completely, start it again and ask: *"Welche Rechnungen sind überfällig?"*
+Quit Claude Desktop completely, start it again and ask: *"Which invoices are overdue?"*
 If the server does not show up, check the log
 (macOS: `~/Library/Logs/Claude/mcp-server-lexware-php-mcp.log`).
 
-### Configuration
+## Use with Claude Code
+
+Register the server once; Claude Code starts it on demand:
+
+```bash
+claude mcp add --env LEXWARE_API_KEY=your-api-key lexware-php-mcp -- php /absolute/path/to/lexware-php-mcp/bin/lexware-php-mcp
+```
+
+By default the entry applies to the current project only. Add `--scope user` to make it available
+everywhere. Check with `claude mcp list`, or run `/mcp` inside a session. The key is stored in plain text in
+Claude Code's configuration; keep it private.
+
+## Configuration
 
 | Variable | Required | Default |
 |---|---|---|
