@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Belegblick is in early development. Only the latest release (or `main` before the first release)
+lexware-php-mcp is in early development. Only the latest release (or `main` before the first release)
 receives security fixes.
 
 ## Reporting a vulnerability
@@ -11,7 +11,7 @@ Please **do not open a public issue** for security problems.
 
 Report them privately via GitHub:
 **Security → Report a vulnerability** in this repository
-(<https://github.com/Stefan39/belegblick-mcp/security/advisories/new>).
+(<https://github.com/Stefan39/lexware-php-mcp/security/advisories/new>).
 
 Please include:
 

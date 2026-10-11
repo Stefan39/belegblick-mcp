@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Lexware;
+namespace Jacomeit\LexwarePhpMcp\Lexware;
 
 /**
  * Turns Lexware's "regular error response" body into one readable line.

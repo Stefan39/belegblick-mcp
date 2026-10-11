@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Lexware;
+namespace Jacomeit\LexwarePhpMcp\Lexware;
 
-use Jacomeit\Belegblick\Exception\LexwareApiException;
+use Jacomeit\LexwarePhpMcp\Exception\LexwareApiException;
 
 /**
  * @internal

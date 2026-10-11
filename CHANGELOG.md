@@ -7,6 +7,18 @@ contain breaking changes.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-11
+
+### Changed
+
+- Project renamed to **lexware-php-mcp** (package `jacomeit/lexware-php-mcp`, repository
+  `Stefan39/lexware-php-mcp`). Breaking for existing installations:
+  - The binary is now `bin/lexware-php-mcp`; update the path in your MCP client configuration.
+  - The MCP server reports its name as `lexware-php-mcp`; rename the `mcpServers` entry accordingly.
+  - The PHP namespace is now `Jacomeit\LexwarePhpMcp`.
+  - The README uses the Keychain service `lexware-php-mcp`; store the key again under that name or
+    keep your own service name in the config.
+
 ## [0.1.0] - 2026-10-10
 
 First release.
@@ -23,5 +35,6 @@ First release.
 - API key only via the `LEXWARE_API_KEY` environment variable; setup with the macOS Keychain documented.
 - Architecture decision record, security policy, CI (PHP 8.4 and 8.5, PHPStan level 8, php-cs-fixer, jscpd).
 
-[Unreleased]: https://github.com/Stefan39/belegblick-mcp/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/Stefan39/belegblick-mcp/releases/tag/v0.1.0
+[Unreleased]: https://github.com/Stefan39/lexware-php-mcp/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Stefan39/lexware-php-mcp/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/Stefan39/lexware-php-mcp/releases/tag/v0.1.0

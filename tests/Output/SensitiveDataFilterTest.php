@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Tests\Output;
+namespace Jacomeit\LexwarePhpMcp\Tests\Output;
 
-use Jacomeit\Belegblick\Output\SensitiveDataFilter;
+use Jacomeit\LexwarePhpMcp\Output\SensitiveDataFilter;
 use PHPUnit\Framework\TestCase;
 
 final class SensitiveDataFilterTest extends TestCase

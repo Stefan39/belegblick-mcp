@@ -1,4 +1,4 @@
-# ADR 0001: Architecture of Belegblick, an MCP server for Lexware Office
+# ADR 0001: Architecture of lexware-php-mcp, an MCP server for Lexware Office
 
 - Status: accepted
 - Date: 2026-10-10
@@ -19,7 +19,7 @@ PHP-native one; this project fills that gap and is meant to be published as open
   0.5.0 to <0.7.1 are affected by advisory PKSA-p9gd-j6gr-6f9t, so the floor is 0.8.1.
 - The SDK is experimental until 1.0. Renovate is configured to never automerge it; every update
   is reviewed by hand.
-- The server is a plain PHP CLI (`bin/belegblick-mcp`) wired by `ServerFactory`. A Symfony
+- The server is a plain PHP CLI (`bin/lexware-php-mcp`) wired by `ServerFactory`. A Symfony
   kernel would add boot time to every Claude Desktop start and buys nothing for a handful of tools.
   `symfony/mcp-bundle` stays an option once HTTP transport or multi-tenant hosting is needed.
 - Tools are registered explicitly via `Builder::addTool([$object, '__invoke'], ...)` instead of
@@ -82,15 +82,21 @@ up to 3 attempts with exponential backoff (1 s, 2 s), respecting a numeric `Retr
 2 vouchers/second. A quarter with 150 invoices takes ~75 s. This needs progress notifications or a
 local cache; decided when the tool is built.
 
-### 6. Name: Belegblick
+### 6. Name: lexware-php-mcp
 
-The licence terms forbid using Lexware/Haufe trademarks without consent (II.2), so the product name
-carries no mark: **Belegblick** (package `jacomeit/belegblick-mcp`, binary `bin/belegblick-mcp`,
-namespace `Jacomeit\Belegblick`), decided 2026-10-10. "Beleg" is Lexware's own umbrella term for
-invoices, credit notes and receipts; "Blick" stresses read-only access. "Lexware Office" appears only
-descriptively ("an unofficial MCP server for Lexware Office") next to the disclaimer. API-facing
-identifiers (`LexwareClient`, `LEXWARE_API_KEY`) name the API they talk to and stay. At decision time
-the name was free on Packagist, GitHub and npm.
+Package `jacomeit/lexware-php-mcp`, repository `Stefan39/lexware-php-mcp`, binary `bin/lexware-php-mcp`,
+namespace `Jacomeit\LexwarePhpMcp`, MCP server name `lexware-php-mcp`. Decided by Stefan on 2026-10-11
+(JAC-708, released as 0.2.0); it replaces the mark-free product name chosen on 2026-10-10.
+
+- Why: the name has to show unambiguously that this is the PHP server for Lexware Office. Other
+  projects use "lexware" in their names as well; "php" sets this one apart from them.
+- Deliberate deviation: the licence terms forbid using Lexware/Haufe names and marks without prior
+  consent (II.2), and the repository and package name now contain "lexware". That other projects do
+  the same is not a permission. The owner accepts this risk knowingly; if Haufe objects, the project
+  is renamed again (GitHub redirects the old URL).
+- Mitigation: no logos, no "official" wording, the disclaimer "Unofficial. Not affiliated with Haufe
+  Group" stays in the README and the Composer package description, and the server instructions repeat it.
+- API-facing identifiers (`LexwareClient`, `LEXWARE_API_KEY`) are unchanged.
 
 ## Consequences
 
@@ -112,7 +118,7 @@ Source: "Public API Lizenz- und Nutzungsbedingungen", Stand August 2026,
   README sections "Status" and "Safety" and the server instructions.
 - Applications must not request other licensees' API keys or collect customer data outside the API (II.1).
 - **Trademarks:** names, trademarks, logos of the licensor / Haufe Group must not be used without prior
-  consent (II.2). Resolved by naming the project **Belegblick** (decision 6).
+  consent (II.2). The project name contains "lexware" anyway; accepted risk, see decision 6.
 - Rate limiting may be imposed without a fixed number (II.1); we keep the documented 2 requests/second.
 - API provided as is, use at own risk, licensee indemnifies the licensor (II, V); termination with 90 days'
   notice (V.2). German law, venue Freiburg (VI).
@@ -122,9 +128,8 @@ This is an engineering reading, not legal advice.
 
 ## Open before the first public release (status at v0.1.0)
 
-- ~~Trademark search for "Belegblick"~~ Done 2026-10-10: no hit in the DPMA/TMview search (Stefan).
-  `belegblick.de` is registered with nameservers at Buhl Data and redirects to buhl.de (probably a
-  defensive registration); `belegblick.com` was free. Accepted as residual risk (JAC-705).
+- ~~Trademark search for the product name~~ Obsolete since the rename to lexware-php-mcp (decision 6).
 - README disclaimer: "Unofficial. Not affiliated with Haufe Group. Lexware and lexoffice are
   trademarks of Haufe Group." (in place).
-- Packagist name and distribution (Composer global install vs. PHAR).
+- Packagist: register `jacomeit/lexware-php-mcp` after the repository rename (JAC-708). Distribution
+  (Composer global install vs. PHAR) still open.
