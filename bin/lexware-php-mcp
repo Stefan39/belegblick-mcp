@@ -3,9 +3,9 @@
 
 declare(strict_types=1);
 
-use Jacomeit\Belegblick\Config\Configuration;
-use Jacomeit\Belegblick\Exception\MissingApiKeyException;
-use Jacomeit\Belegblick\ServerFactory;
+use Jacomeit\LexwarePhpMcp\Config\Configuration;
+use Jacomeit\LexwarePhpMcp\Exception\MissingApiKeyException;
+use Jacomeit\LexwarePhpMcp\ServerFactory;
 use Mcp\Server\Transport\StdioTransport;
 
 $autoloaders = [__DIR__ . '/../vendor/autoload.php', __DIR__ . '/../../../autoload.php'];

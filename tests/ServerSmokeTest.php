@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Tests;
+namespace Jacomeit\LexwarePhpMcp\Tests;
 
-use Jacomeit\Belegblick\ServerFactory;
+use Jacomeit\LexwarePhpMcp\ServerFactory;
 use PHPUnit\Framework\TestCase;
 
 final class ServerSmokeTest extends TestCase
 {
-    private const string BINARY = __DIR__ . '/../bin/belegblick-mcp';
+    private const string BINARY = __DIR__ . '/../bin/lexware-php-mcp';
 
     public function testStdioServerAnnouncesReadOnlyOpenItemsTool(): void
     {
@@ -23,7 +23,7 @@ final class ServerSmokeTest extends TestCase
             ['jsonrpc' => '2.0', 'id' => 2, 'method' => 'tools/list'],
         ], 2);
 
-        self::assertSame('belegblick-mcp', $responses[1]['result']['serverInfo']['name'] ?? null);
+        self::assertSame('lexware-php-mcp', $responses[1]['result']['serverInfo']['name'] ?? null);
         self::assertSame(ServerFactory::VERSION, $responses[1]['result']['serverInfo']['version'] ?? null);
 
         $tools = array_column($responses[2]['result']['tools'] ?? [], null, 'name');

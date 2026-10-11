@@ -1,2 +1,2 @@
-# Every change needs a review by the maintainer (enforced by the branch ruleset).
+# The maintainer owns every file. The branch ruleset on main requires a pull request with green CI.
 * @Stefan39

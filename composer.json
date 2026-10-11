@@ -1,6 +1,6 @@
 {
-    "name": "jacomeit/belegblick-mcp",
-    "description": "Belegblick: unofficial read-only MCP server for Lexware Office (formerly lexoffice), built on the official PHP MCP SDK.",
+    "name": "jacomeit/lexware-php-mcp",
+    "description": "Unofficial read-only MCP server for Lexware Office (formerly lexoffice), built on the official PHP MCP SDK. Not affiliated with Haufe Group.",
     "type": "project",
     "license": "MIT",
     "keywords": ["mcp", "model-context-protocol", "lexware", "lexoffice", "claude"],
@@ -18,15 +18,15 @@
     },
     "autoload": {
         "psr-4": {
-            "Jacomeit\\Belegblick\\": "src/"
+            "Jacomeit\\LexwarePhpMcp\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Jacomeit\\Belegblick\\Tests\\": "tests/"
+            "Jacomeit\\LexwarePhpMcp\\Tests\\": "tests/"
         }
     },
-    "bin": ["bin/belegblick-mcp"],
+    "bin": ["bin/lexware-php-mcp"],
     "config": {
         "sort-packages": true,
         "platform": {

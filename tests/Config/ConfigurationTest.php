@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Tests\Config;
+namespace Jacomeit\LexwarePhpMcp\Tests\Config;
 
-use Jacomeit\Belegblick\Config\Configuration;
-use Jacomeit\Belegblick\Exception\MissingApiKeyException;
+use Jacomeit\LexwarePhpMcp\Config\Configuration;
+use Jacomeit\LexwarePhpMcp\Exception\MissingApiKeyException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

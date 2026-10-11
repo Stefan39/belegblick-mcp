@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Output;
+namespace Jacomeit\LexwarePhpMcp\Output;
 
 /**
  * Removes bank details from any API payload before it reaches the model.

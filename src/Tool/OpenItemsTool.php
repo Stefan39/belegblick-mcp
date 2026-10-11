@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Tool;
+namespace Jacomeit\LexwarePhpMcp\Tool;
 
-use Jacomeit\Belegblick\Exception\LexwareApiException;
-use Jacomeit\Belegblick\Lexware\LexwareClient;
-use Jacomeit\Belegblick\Output\SensitiveDataFilter;
+use Jacomeit\LexwarePhpMcp\Exception\LexwareApiException;
+use Jacomeit\LexwarePhpMcp\Lexware\LexwareClient;
+use Jacomeit\LexwarePhpMcp\Output\SensitiveDataFilter;
 use Mcp\Capability\Attribute\Schema;
 use Mcp\Exception\ToolCallException;
 use Psr\Clock\ClockInterface;

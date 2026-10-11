@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Tests\Lexware;
+namespace Jacomeit\LexwarePhpMcp\Tests\Lexware;
 
-use Jacomeit\Belegblick\Exception\LexwareApiException;
-use Jacomeit\Belegblick\Lexware\LexwareClient;
-use Jacomeit\Belegblick\Lexware\RequestThrottle;
+use Jacomeit\LexwarePhpMcp\Exception\LexwareApiException;
+use Jacomeit\LexwarePhpMcp\Lexware\LexwareClient;
+use Jacomeit\LexwarePhpMcp\Lexware\RequestThrottle;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpClient\MockHttpClient;

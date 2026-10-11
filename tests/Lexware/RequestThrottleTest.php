@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Tests\Lexware;
+namespace Jacomeit\LexwarePhpMcp\Tests\Lexware;
 
-use Jacomeit\Belegblick\Lexware\RequestThrottle;
+use Jacomeit\LexwarePhpMcp\Lexware\RequestThrottle;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 

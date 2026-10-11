@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Config;
+namespace Jacomeit\LexwarePhpMcp\Config;
 
-use Jacomeit\Belegblick\Exception\MissingApiKeyException;
+use Jacomeit\LexwarePhpMcp\Exception\MissingApiKeyException;
 
 final readonly class Configuration
 {

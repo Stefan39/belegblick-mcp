@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Lexware;
+namespace Jacomeit\LexwarePhpMcp\Lexware;
 
 use Psr\Clock\ClockInterface;
 use Symfony\Component\Clock\ClockInterface as SleepingClockInterface;

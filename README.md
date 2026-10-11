@@ -1,8 +1,8 @@
-# Belegblick
+# lexware-php-mcp
 
 > **Unofficial.** Not affiliated with Haufe Group. Lexware and lexoffice are trademarks of Haufe Group.
 
-Belegblick is a read-only [Model Context Protocol](https://modelcontextprotocol.io) server for
+lexware-php-mcp is an unofficial, read-only [Model Context Protocol](https://modelcontextprotocol.io) server for
 [Lexware Office](https://www.lexware.de/) (formerly lexoffice), written in PHP on top of the
 official [PHP MCP SDK](https://github.com/modelcontextprotocol/php-sdk).
 
@@ -10,7 +10,7 @@ Ask Claude things like *"Which invoices are overdue?"* and get answers straight 
 
 ## Status
 
-v0.1.0, early but usable. See the [changelog](CHANGELOG.md). Currently available tool:
+v0.2.0, early but usable. See the [changelog](CHANGELOG.md). Currently available tool:
 
 | Tool | What it does |
 |---|---|
@@ -42,8 +42,8 @@ Use of the Lexware API is governed by the
 ## Installation
 
 ```bash
-git clone --branch v0.1.0 https://github.com/Stefan39/belegblick-mcp.git
-cd belegblick-mcp
+git clone --branch v0.2.0 https://github.com/Stefan39/lexware-php-mcp.git
+cd lexware-php-mcp
 composer install --no-dev
 ```
 
@@ -58,7 +58,7 @@ Claude Desktop starts the server itself. You add **one entry** under `mcpServers
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
 The file usually contains other settings already. Do not paste a second `{ ... }` block at the end:
-add the `"belegblick"` entry inside the existing `"mcpServers"` object, or create
+add the `"lexware-php-mcp"` entry inside the existing `"mcpServers"` object, or create
 `"mcpServers"` as a new top-level key if it is missing. Check the result with
 `python3 -m json.tool claude_desktop_config.json` before restarting Claude Desktop.
 
@@ -67,24 +67,24 @@ add the `"belegblick"` entry inside the existing `"mcpServers"` object, or creat
 Store the key once; the command prompts for it, so it never ends up in your shell history:
 
 ```bash
-security add-generic-password -s belegblick -a lexware -w
+security add-generic-password -s lexware-php-mcp -a lexware -w
 ```
 
 Entry for `mcpServers` (adjust both paths; `which php` shows yours):
 
 ```json
-"belegblick": {
+"lexware-php-mcp": {
   "command": "/bin/sh",
-  "args": ["-c", "LEXWARE_API_KEY=$(security find-generic-password -s belegblick -w) exec /opt/homebrew/bin/php /absolute/path/to/belegblick-mcp/bin/belegblick-mcp"]
+  "args": ["-c", "LEXWARE_API_KEY=$(security find-generic-password -s lexware-php-mcp -w) exec /opt/homebrew/bin/php /absolute/path/to/lexware-php-mcp/bin/lexware-php-mcp"]
 }
 ```
 
 ### Other systems: API key in the config
 
 ```json
-"belegblick": {
+"lexware-php-mcp": {
   "command": "php",
-  "args": ["/absolute/path/to/belegblick-mcp/bin/belegblick-mcp"],
+  "args": ["/absolute/path/to/lexware-php-mcp/bin/lexware-php-mcp"],
   "env": {
     "LEXWARE_API_KEY": "your-api-key"
   }
@@ -95,7 +95,7 @@ The key is then stored in plain text in that file; keep it private.
 
 Quit Claude Desktop completely, start it again and ask: *"Welche Rechnungen sind überfällig?"*
 If the server does not show up, check the log
-(macOS: `~/Library/Logs/Claude/mcp-server-belegblick.log`).
+(macOS: `~/Library/Logs/Claude/mcp-server-lexware-php-mcp.log`).
 
 ### Configuration
 
@@ -116,7 +116,7 @@ Debug the server interactively with the MCP Inspector. The Inspector starts the 
 minimal environment, so pass the key with `-e`; a variable set in your shell does not reach it:
 
 ```bash
-npx @modelcontextprotocol/inspector -e LEXWARE_API_KEY=your-api-key php bin/belegblick-mcp
+npx @modelcontextprotocol/inspector -e LEXWARE_API_KEY=your-api-key php bin/lexware-php-mcp
 ```
 
 Tests never touch the real API; they use Symfony's `MockHttpClient` and `MockClock`.
