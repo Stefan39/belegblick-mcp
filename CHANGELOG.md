@@ -7,6 +7,12 @@ contain breaking changes.
 
 ## [Unreleased]
 
+### Added
+
+- German README (`README.de.md`) and a language switch in both READMEs.
+- README section "Why a PHP server?", CI/license/PHP badges and example questions.
+- Installation guide for Claude Code (`claude mcp add`).
+
 ## [0.2.0] - 2026-10-11
 
 ### Changed
