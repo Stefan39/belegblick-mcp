@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick;
+namespace Jacomeit\LexwarePhpMcp;
 
-use Jacomeit\Belegblick\Config\Configuration;
-use Jacomeit\Belegblick\Lexware\LexwareClient;
-use Jacomeit\Belegblick\Lexware\RequestThrottle;
-use Jacomeit\Belegblick\Output\SensitiveDataFilter;
-use Jacomeit\Belegblick\Tool\OpenItemsTool;
+use Jacomeit\LexwarePhpMcp\Config\Configuration;
+use Jacomeit\LexwarePhpMcp\Lexware\LexwareClient;
+use Jacomeit\LexwarePhpMcp\Lexware\RequestThrottle;
+use Jacomeit\LexwarePhpMcp\Output\SensitiveDataFilter;
+use Jacomeit\LexwarePhpMcp\Tool\OpenItemsTool;
 use Mcp\Schema\ToolAnnotations;
 use Mcp\Server;
 use Symfony\Component\Clock\NativeClock;
@@ -16,11 +16,11 @@ use Symfony\Component\HttpClient\HttpClient;
 
 final class ServerFactory
 {
-    public const string NAME = 'belegblick-mcp';
+    public const string NAME = 'lexware-php-mcp';
 
-    public const string VERSION = '0.1.0';
+    public const string VERSION = '0.2.0';
 
-    private const string INSTRUCTIONS = 'Belegblick: unofficial, read-only access to a Lexware Office (formerly lexoffice) account. '
+    private const string INSTRUCTIONS = 'lexware-php-mcp: unofficial, read-only access to a Lexware Office (formerly lexoffice) account. '
         . 'Not affiliated with Haufe Group. Bank details are never returned.';
 
     public static function create(Configuration $configuration): Server

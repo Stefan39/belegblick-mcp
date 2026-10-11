@@ -1,6 +1,6 @@
-# CLAUDE.md: belegblick-mcp
+# CLAUDE.md: lexware-php-mcp
 
-Belegblick: unofficial read-only MCP server for Lexware Office in PHP (`mcp/sdk`). Architecture: `docs/adr/0001-architecture.md`.
+lexware-php-mcp: unofficial read-only MCP server for Lexware Office in PHP (`mcp/sdk`). Architecture: `docs/adr/0001-architecture.md`.
 
 ## Gates (run before handing back any change)
 - `composer check` = php-cs-fixer dry run + PHPStan level 8 (strict rules) + PHPUnit. All green.
@@ -15,5 +15,5 @@ Belegblick: unofficial read-only MCP server for Lexware Office in PHP (`mcp/sdk`
 - Domain exceptions extend `\RuntimeException`; never throw/catch `\RuntimeException`/`\Exception` directly. Tools convert `LexwareApiException` into `Mcp\Exception\ToolCallException`.
 - Tests: final classes, no network (`MockHttpClient`, `MockClock`), fixtures in `tests/Fixtures/`.
 - Register tools in `ServerFactory` with `[$object, '__invoke']` (SDK does not accept invokable objects).
-- Naming: product/package/binary is "Belegblick" (`belegblick-mcp`). "Lexware" only descriptively (README text, API-facing names like `LexwareClient`, env `LEXWARE_API_KEY`), never as product name (licence clause II.2, ADR 0001).
+- Naming: product/package/binary/server name is `lexware-php-mcp` (package `jacomeit/lexware-php-mcp`, namespace `Jacomeit\LexwarePhpMcp`). Always keep the disclaimer "Unofficial, not affiliated with Haufe Group" in README and package description; never use Lexware/Haufe logos (ADR 0001, decision 6).
 - `mcp/sdk` is pre-1.0: review every update manually.

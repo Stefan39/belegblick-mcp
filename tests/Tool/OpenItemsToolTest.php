@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Tests\Tool;
+namespace Jacomeit\LexwarePhpMcp\Tests\Tool;
 
-use Jacomeit\Belegblick\Lexware\LexwareClient;
-use Jacomeit\Belegblick\Lexware\RequestThrottle;
-use Jacomeit\Belegblick\Output\SensitiveDataFilter;
-use Jacomeit\Belegblick\Tool\OpenItemsTool;
+use Jacomeit\LexwarePhpMcp\Lexware\LexwareClient;
+use Jacomeit\LexwarePhpMcp\Lexware\RequestThrottle;
+use Jacomeit\LexwarePhpMcp\Output\SensitiveDataFilter;
+use Jacomeit\LexwarePhpMcp\Tool\OpenItemsTool;
 use Mcp\Exception\ToolCallException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;

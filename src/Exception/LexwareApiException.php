@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jacomeit\Belegblick\Exception;
+namespace Jacomeit\LexwarePhpMcp\Exception;
 
 final class LexwareApiException extends \RuntimeException
 {
