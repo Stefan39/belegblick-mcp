@@ -126,10 +126,11 @@ Source: "Public API Lizenz- und Nutzungsbedingungen", Stand August 2026,
 
 This is an engineering reading, not legal advice.
 
-## Open before the first public release (status at v0.1.0)
+## Open before the first public release (status at v0.2.0)
 
 - ~~Trademark search for the product name~~ Obsolete since the rename to lexware-php-mcp (decision 6).
 - README disclaimer: "Unofficial. Not affiliated with Haufe Group. Lexware and lexoffice are
   trademarks of Haufe Group." (in place).
-- Packagist: register `jacomeit/lexware-php-mcp` after the repository rename (JAC-708). Distribution
-  (Composer global install vs. PHAR) still open.
+- ~~Packagist: register `jacomeit/lexware-php-mcp` after the repository rename~~ Done 2026-10-11
+  (JAC-708): <https://packagist.org/packages/jacomeit/lexware-php-mcp>, v0.1.0 and v0.2.0 listed.
+- Distribution (Composer global install vs. PHAR) still open.
