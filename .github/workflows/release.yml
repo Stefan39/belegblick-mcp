@@ -131,10 +131,16 @@ jobs:
               run: spc doctor --auto-fix
 
             - name: Download sources
+              env:
+                  # spc lists releases via the GitHub API; anonymous calls hit the shared rate limit.
+                  GITHUB_TOKEN: ${{ github.token }}
               run: spc download --with-php="${PHP_VERSION}" --for-extensions="${PHP_EXTENSIONS}" --prefer-pre-built
 
             - name: Build static PHP (micro)
-              run: spc build "${PHP_EXTENSIONS}" --build-micro
+              run: |
+                  # spc expects the Windows tar; Git Bash would put GNU tar first, which cannot handle D:\ paths.
+                  if [ "$RUNNER_OS" = Windows ]; then export PATH="/c/Windows/System32:$PATH"; fi
+                  spc build "${PHP_EXTENSIONS}" --build-micro
 
             - name: Combine PHP and server
               run: |
