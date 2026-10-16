@@ -1,0 +1,55 @@
+{
+    "manifest_version": "0.3",
+    "name": "lexware-php-mcp",
+    "display_name": "lexware-php-mcp (unofficial)",
+    "version": "0.3.0",
+    "description": "Unofficial, read-only access to your Lexware Office (formerly lexoffice) account. Not affiliated with Haufe Group.",
+    "long_description": "Ask Claude things like \"Which invoices are overdue?\" and get answers straight from your Lexware Office account. The server only reads data, never changes it, and strips bank details from every response. Unofficial, not affiliated with Haufe Group. Lexware and lexoffice are trademarks of Haufe Group.",
+    "author": {
+        "name": "Stefan Jacomeit",
+        "url": "https://www.jacomeit.de"
+    },
+    "homepage": "https://github.com/Stefan39/lexware-php-mcp",
+    "documentation": "https://github.com/Stefan39/lexware-php-mcp#readme",
+    "support": "https://github.com/Stefan39/lexware-php-mcp/issues",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Stefan39/lexware-php-mcp.git"
+    },
+    "license": "MIT",
+    "keywords": ["lexware", "lexoffice", "accounting", "invoices", "buchhaltung"],
+    "server": {
+        "type": "binary",
+        "entry_point": "server/lexware-php-mcp",
+        "mcp_config": {
+            "command": "${__dirname}/server/lexware-php-mcp",
+            "args": [],
+            "env": {
+                "LEXWARE_API_KEY": "${user_config.api_key}"
+            },
+            "platform_overrides": {
+                "win32": {
+                    "command": "${__dirname}/server/lexware-php-mcp.exe"
+                }
+            }
+        }
+    },
+    "tools": [
+        {
+            "name": "open_items",
+            "description": "Unpaid sales invoices (open and overdue), oldest due date first, with days overdue and totals per currency."
+        }
+    ],
+    "user_config": {
+        "api_key": {
+            "type": "string",
+            "title": "Lexware Office API key",
+            "description": "Create it at https://app.lexware.de/addons/public-api. Stored securely by Claude Desktop.",
+            "sensitive": true,
+            "required": true
+        }
+    },
+    "compatibility": {
+        "platforms": ["darwin", "linux", "win32"]
+    }
+}

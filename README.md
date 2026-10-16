@@ -14,14 +14,18 @@ official [PHP MCP SDK](https://github.com/modelcontextprotocol/php-sdk).
 
 Ask Claude things like *"Which invoices are overdue?"* and get answers straight from your account.
 
+**No PHP needed:** for Claude Desktop on macOS and Windows there is a one-click extension, see
+[Quick start](#quick-start-claude-desktop-no-php-needed).
+
 ## Why a PHP server?
 
 The existing Lexware MCP servers are written in TypeScript or Python. This one is the PHP-native option, and
 that is the point: it is not a claim that PHP is technically better, but that PHP shops should not need a second
 runtime to give an AI assistant access to their bookkeeping.
 
-- **One runtime you already run.** PHP 8.4 and Composer, nothing else. No Node.js or Python toolchain, no
-  `npx` downloading code at startup.
+- **One runtime you already run, or none at all.** PHP 8.4 and Composer, nothing else. No Node.js or Python
+  toolchain, no `npx` downloading code at startup. Without PHP, use the standalone download, which has PHP
+  built in.
 - **Small enough to audit.** The server has three runtime dependencies (`mcp/sdk`, `symfony/http-client`,
   `symfony/clock`) and a handful of classes. Anyone handing an AI access to accounting data can read all of it
   in an afternoon. It is checked with PHPStan level 8 including strict rules.
@@ -39,7 +43,7 @@ runtime to give an AI assistant access to their bookkeeping.
 
 ## Status
 
-v0.2.0, early but usable. See the [changelog](CHANGELOG.md). Currently available tool:
+v0.3.0, early but usable. See the [changelog](CHANGELOG.md). Currently available tool:
 
 | Tool | What it does |
 |---|---|
@@ -62,26 +66,84 @@ Found a security problem? Please report it privately, see [SECURITY.md](SECURITY
 Use of the Lexware API is governed by the
 [Public API Lizenz- und Nutzungsbedingungen](https://agb.lexware.de/lexware-office/public-api-lizenz--und-nutzungsbedingungen).
 
-## Requirements
+## Quick start: Claude Desktop, no PHP needed
+
+You need a Lexware Office public API key: <https://app.lexware.de/addons/public-api>.
+Nothing else has to be installed; the download contains everything, PHP included.
+
+1. Download the extension for your system from the [latest release](https://github.com/Stefan39/lexware-php-mcp/releases/latest):
+   - macOS (Apple silicon and Intel): [`lexware-php-mcp-macos.mcpb`](https://github.com/Stefan39/lexware-php-mcp/releases/latest/download/lexware-php-mcp-macos.mcpb)
+   - Windows: [`lexware-php-mcp-windows.mcpb`](https://github.com/Stefan39/lexware-php-mcp/releases/latest/download/lexware-php-mcp-windows.mcpb)
+2. Double-click the file. Claude Desktop opens and shows the extension. If double-clicking does not work,
+   open *Settings > Extensions > Advanced settings > Install Extension…* in Claude Desktop and pick the file.
+3. Click *Install* and paste your API key when asked. Claude Desktop stores it in its secure storage;
+   it does not end up in a configuration file.
+4. Make sure the extension is switched on, then ask: *"Which invoices are overdue?"*
+
+To update, download the new `.mcpb` and install it the same way.
+
+The Windows extension is built and tested automatically (start-up and a TLS connection to the Lexware API),
+but the maintainer has not tried it on a Windows PC. Reports are welcome as an
+[issue](https://github.com/Stefan39/lexware-php-mcp/issues).
+
+## Standalone binary: Claude Code and other MCP clients
+
+Every release also contains the server as a single executable file, again with PHP built in:
+
+| System | File |
+|---|---|
+| macOS, Apple silicon | `lexware-php-mcp-macos-arm64` |
+| macOS, Intel | `lexware-php-mcp-macos-x86_64` |
+| Linux, x86_64 | `lexware-php-mcp-linux-x86_64` |
+| Linux, ARM64 | `lexware-php-mcp-linux-arm64` |
+| Windows, x86_64 | `lexware-php-mcp-windows-x86_64.exe` |
+
+`SHA256SUMS` in the release lets you verify the download (`shasum -a 256 -c SHA256SUMS --ignore-missing`).
+
+On macOS and Linux, make the file executable. The binaries are not signed, so on macOS also remove the
+download quarantine, otherwise Gatekeeper refuses to start the file:
+
+```bash
+chmod +x lexware-php-mcp-macos-arm64
+xattr -d com.apple.quarantine lexware-php-mcp-macos-arm64   # macOS only
+```
+
+Register it with Claude Code:
+
+```bash
+claude mcp add --env LEXWARE_API_KEY=your-api-key lexware-php-mcp -- /absolute/path/to/lexware-php-mcp-macos-arm64
+```
+
+By default the entry applies to the current project only. Add `--scope user` to make it available
+everywhere. Check with `claude mcp list`, or run `/mcp` inside a session. The key is stored in plain text in
+Claude Code's configuration; keep it private.
+
+Linux needs the usual CA certificates for HTTPS (package `ca-certificates`, installed on desktop
+systems anyway).
+
+## Installation from source (PHP developers)
+
+If you already work with PHP, you can run the server from source instead.
+
+Requirements:
 
 - PHP 8.4 or newer (CLI) with `ext-json`
 - Composer
-- A Lexware Office public API key: <https://app.lexware.de/addons/public-api>
-
-## Installation
 
 ```bash
-git clone --branch v0.2.0 https://github.com/Stefan39/lexware-php-mcp.git
+git clone --branch v0.3.0 https://github.com/Stefan39/lexware-php-mcp.git
 cd lexware-php-mcp
 composer install --no-dev
 ```
 
 To update later: `git fetch --tags && git checkout <new-tag> && composer install --no-dev`.
 
-## Use with Claude Desktop
+A `lexware-php-mcp.phar` is attached to every release as well; it runs with `php lexware-php-mcp.phar`.
 
-Claude Desktop starts the server itself. You add **one entry** under `mcpServers` in
-`claude_desktop_config.json`:
+### Claude Desktop with a manual configuration
+
+The extension above is the easier way. If you prefer to configure the server yourself, add **one entry**
+under `mcpServers` in `claude_desktop_config.json`:
 
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
@@ -91,7 +153,7 @@ add the `"lexware-php-mcp"` entry inside the existing `"mcpServers"` object, or 
 `"mcpServers"` as a new top-level key if it is missing. Check the result with
 `python3 -m json.tool claude_desktop_config.json` before restarting Claude Desktop.
 
-### macOS (recommended): API key from the Keychain
+#### macOS: API key from the Keychain
 
 Store the key once; the command prompts for it, so it never ends up in your shell history:
 
@@ -99,7 +161,8 @@ Store the key once; the command prompts for it, so it never ends up in your shel
 security add-generic-password -s lexware-php-mcp -a lexware -w
 ```
 
-Entry for `mcpServers` (adjust both paths; `which php` shows yours):
+Entry for `mcpServers` (adjust both paths; `which php` shows yours). With a standalone binary, replace
+`/opt/homebrew/bin/php /absolute/path/to/lexware-php-mcp/bin/lexware-php-mcp` by the path of the binary:
 
 ```json
 "lexware-php-mcp": {
@@ -108,7 +171,7 @@ Entry for `mcpServers` (adjust both paths; `which php` shows yours):
 }
 ```
 
-### Other systems: API key in the config
+#### Other systems: API key in the config
 
 ```json
 "lexware-php-mcp": {
@@ -126,17 +189,11 @@ Quit Claude Desktop completely, start it again and ask: *"Which invoices are ove
 If the server does not show up, check the log
 (macOS: `~/Library/Logs/Claude/mcp-server-lexware-php-mcp.log`).
 
-## Use with Claude Code
-
-Register the server once; Claude Code starts it on demand:
+### Claude Code from source
 
 ```bash
 claude mcp add --env LEXWARE_API_KEY=your-api-key lexware-php-mcp -- php /absolute/path/to/lexware-php-mcp/bin/lexware-php-mcp
 ```
-
-By default the entry applies to the current project only. Add `--scope user` to make it available
-everywhere. Check with `claude mcp list`, or run `/mcp` inside a session. The key is stored in plain text in
-Claude Code's configuration; keep it private.
 
 ## Configuration
 
@@ -161,6 +218,16 @@ npx @modelcontextprotocol/inspector -e LEXWARE_API_KEY=your-api-key php bin/lexw
 ```
 
 Tests never touch the real API; they use Symfony's `MockHttpClient` and `MockClock`.
+
+### Standalone builds
+
+The workflow `.github/workflows/release.yml` builds the PHAR ([Box](https://github.com/box-project/box),
+config `box.json`), the static binaries ([static-php-cli](https://github.com/crazywhalecc/static-php-cli):
+PHP plus the PHAR in one file) and the Claude Desktop extensions (`build-tools/package-mcpb.sh`, manifest
+in `build-tools/mcpb/`). It runs on pull requests that touch the build, and on a version tag it attaches
+everything to a draft release. Check any build with `build-tools/smoke-test.sh <command>`; with
+`SMOKE_TEST_TLS=1` it also sends one request with an invalid key to the real API and expects HTTP 401.
+Keep `version` in `build-tools/mcpb/manifest.json` in line with `ServerFactory::VERSION` (a test checks it).
 
 ## License
 

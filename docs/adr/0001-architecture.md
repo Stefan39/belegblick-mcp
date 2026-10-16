@@ -98,6 +98,31 @@ namespace `Jacomeit\LexwarePhpMcp`, MCP server name `lexware-php-mcp`. Decided b
   Group" stays in the README and the Composer package description, and the server instructions repeat it.
 - API-facing identifiers (`LexwareClient`, `LEXWARE_API_KEY`) are unchanged.
 
+### 7. Distribution: Claude Desktop extension and standalone binaries
+
+Decided 2026-10-16 (JAC-721). The target audience (self-employed people and bookkeepers using Claude
+Desktop) cannot be expected to install PHP 8.4 and Composer.
+
+| Option | Verdict |
+|---|---|
+| PHAR | Still needs PHP on the machine. Built anyway as a by-product and attached to releases. |
+| Docker image | Needs Docker Desktop, which is a bigger hurdle than PHP for this audience (plus licensing in companies). Rejected. |
+| Static binary (static-php-cli: PHP + PHAR in one file) | No dependencies on the machine. Chosen. |
+
+- The binaries are wrapped into Claude Desktop extensions (`.mcpb`): one for macOS (arm64 and x86_64
+  binaries plus a launcher that picks by `uname -m`), one for Windows (x86_64). The API key is a
+  `sensitive` user config field that Claude Desktop stores securely and passes as `LEXWARE_API_KEY`;
+  the key-only-from-environment rule (decision 4) holds. Linux gets raw binaries only, as there is no
+  official Claude Desktop for Linux.
+- Built in `.github/workflows/release.yml` on GitHub-hosted runners for every platform, with pinned
+  tool versions and checksums. Every binary is smoke-tested over STDIO and with one real HTTPS request
+  (invalid key, expects HTTP 401); the Linux binaries additionally in a clean Debian container without PHP.
+- Static OpenSSL only knows its compile-time default `/etc/ssl/cert.pem`. `CaBundle` falls back to the
+  distribution bundle on Linux and the Windows certificate store; regular PHP installations are untouched.
+- Binaries are not code-signed or notarised (Apple Developer Program: 99 EUR/year). The README explains
+  removing the quarantine flag for the raw macOS binary. Signing is a separate decision.
+- Windows builds are tested in CI only; the maintainer has no Windows machine.
+
 ## Consequences
 
 - No framework, few dependencies, fast start in Claude Desktop.
@@ -133,4 +158,4 @@ This is an engineering reading, not legal advice.
   trademarks of Haufe Group." (in place).
 - ~~Packagist: register `jacomeit/lexware-php-mcp` after the repository rename~~ Done 2026-10-11
   (JAC-708): <https://packagist.org/packages/jacomeit/lexware-php-mcp>, v0.1.0 and v0.2.0 listed.
-- Distribution (Composer global install vs. PHAR) still open.
+- ~~Distribution (Composer global install vs. PHAR) still open.~~ Decided 2026-10-16, see decision 7.
