@@ -80,6 +80,9 @@ Sonst müssen Sie nichts installieren; der Download enthält alles, auch PHP.
    installieren…* und wählen die Datei aus.
 3. Klicken Sie auf *Installieren* und fügen Sie Ihren API-Schlüssel ein, wenn danach gefragt wird. Claude Desktop
    legt ihn in seinem sicheren Speicher ab; er landet in keiner Konfigurationsdatei.
+   Vor der Installation zeigt Claude Desktop eine Warnung, weil die Erweiterung nicht signiert ist. Eine Signatur
+   kostet Geld für ein Zertifikat, darauf verzichtet dieses kostenlose Projekt; der Code ist auf GitHub offen
+   einsehbar. Bestätigen Sie mit *Installieren*.
 4. Achten Sie darauf, dass die Erweiterung eingeschaltet ist, und fragen Sie: *„Welche Rechnungen sind überfällig?“*
 
 Zum Aktualisieren laden Sie die neue `.mcpb` herunter und installieren sie auf dieselbe Weise.

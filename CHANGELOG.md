@@ -7,6 +7,11 @@ contain breaking changes.
 
 ## [Unreleased]
 
+### Changed
+
+- README: the quick start explains the Claude Desktop warning for the unsigned extension, so users do
+  not abort the installation. ADR 0001 records the decision not to sign for now.
+
 ## [0.3.0] - 2026-10-16
 
 ### Added
