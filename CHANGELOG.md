@@ -7,11 +7,24 @@ contain breaking changes.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-16
+
 ### Added
+
+- Setup without PHP: every release now contains a Claude Desktop extension (`.mcpb`) for macOS and
+  Windows (one-click install, the API key is entered in Claude Desktop and stored securely), standalone
+  binaries with PHP built in for macOS, Linux and Windows, a PHAR and `SHA256SUMS` (JAC-721).
+- Release workflow that builds and smoke-tests these files and attaches them to a draft release.
 
 - German README (`README.de.md`) and a language switch in both READMEs.
 - README section "Why a PHP server?", CI/license/PHP badges and example questions.
 - Installation guide for Claude Code (`claude mcp add`).
+
+### Fixed
+
+- HTTPS in the standalone binaries: the server finds the system's CA certificates on Linux
+  distributions where the static OpenSSL default path is missing (Debian, Ubuntu, Fedora, openSUSE)
+  and uses the certificate store on Windows. Regular PHP installations are unaffected.
 
 ## [0.2.0] - 2026-10-11
 
@@ -41,6 +54,7 @@ First release.
 - API key only via the `LEXWARE_API_KEY` environment variable; setup with the macOS Keychain documented.
 - Architecture decision record, security policy, CI (PHP 8.4 and 8.5, PHPStan level 8, php-cs-fixer, jscpd).
 
-[Unreleased]: https://github.com/Stefan39/lexware-php-mcp/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Stefan39/lexware-php-mcp/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/Stefan39/lexware-php-mcp/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Stefan39/lexware-php-mcp/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Stefan39/lexware-php-mcp/releases/tag/v0.1.0

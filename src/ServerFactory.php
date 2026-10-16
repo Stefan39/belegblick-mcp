@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jacomeit\LexwarePhpMcp;
 
+use Jacomeit\LexwarePhpMcp\Config\CaBundle;
 use Jacomeit\LexwarePhpMcp\Config\Configuration;
 use Jacomeit\LexwarePhpMcp\Lexware\LexwareClient;
 use Jacomeit\LexwarePhpMcp\Lexware\RequestThrottle;
@@ -18,7 +19,7 @@ final class ServerFactory
 {
     public const string NAME = 'lexware-php-mcp';
 
-    public const string VERSION = '0.2.0';
+    public const string VERSION = '0.3.0';
 
     private const string INSTRUCTIONS = 'lexware-php-mcp: unofficial, read-only access to a Lexware Office (formerly lexoffice) account. '
         . 'Not affiliated with Haufe Group. Bank details are never returned.';
@@ -30,7 +31,7 @@ final class ServerFactory
             'auth_bearer' => $configuration->apiKey,
             'headers' => ['Accept' => 'application/json', 'User-Agent' => self::NAME . '/' . self::VERSION],
             'timeout' => 20,
-        ]);
+        ] + CaBundle::detectHttpClientOptions());
         $client = new LexwareClient($httpClient, new RequestThrottle($clock), $clock);
         $openItems = new OpenItemsTool($client, new SensitiveDataFilter(), $clock);
 

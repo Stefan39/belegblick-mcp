@@ -1,0 +1,228 @@
+name: Release
+
+# Builds the standalone downloads for users without PHP:
+# a PHAR, static binaries (static-php-cli: PHP + server in one file) and Claude Desktop
+# extensions (.mcpb). On a version tag the files go into a draft GitHub release;
+# pull requests that touch the build and manual runs only upload them as workflow artifacts.
+
+on:
+    pull_request:
+        paths:
+            - '.github/workflows/release.yml'
+            - 'box.json'
+            - 'build-tools/**'
+            - 'composer.lock'
+    push:
+        tags:
+            - 'v*'
+    workflow_dispatch:
+
+concurrency:
+    group: release-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+    contents: read
+
+env:
+    PHP_VERSION: '8.4'
+    PHP_EXTENSIONS: 'ctype,curl,fileinfo,filter,iconv,mbstring,openssl,phar,tokenizer,zlib'
+    # renovate: datasource=github-releases depName=box-project/box
+    BOX_VERSION: '4.6.6'
+    BOX_SHA256: 'aa0966319f709e74bf2bf1d58ddb987903ae4f6d0a9d335ec2261813c189f7fc'
+    # renovate: datasource=github-releases depName=crazywhalecc/static-php-cli
+    SPC_VERSION: '2.8.5'
+
+jobs:
+    phar:
+        name: PHAR
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+              with:
+                  php-version: ${{ env.PHP_VERSION }}
+                  coverage: none
+
+            - name: Install dependencies
+              run: composer install --no-dev --prefer-dist --no-progress --classmap-authoritative
+
+            - name: Build PHAR
+              run: |
+                  curl -fsSL -o box.phar "https://github.com/box-project/box/releases/download/${BOX_VERSION}/box.phar"
+                  echo "${BOX_SHA256}  box.phar" | sha256sum --check
+                  php box.phar compile --no-interaction
+
+            - name: Smoke test
+              run: build-tools/smoke-test.sh php build/lexware-php-mcp.phar
+
+            - name: Upload PHAR
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+              with:
+                  name: phar
+                  path: build/lexware-php-mcp.phar
+                  if-no-files-found: error
+
+    binary:
+        name: Binary (${{ matrix.name }})
+        needs: phar
+        runs-on: ${{ matrix.runner }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - name: macos-arm64
+                      runner: macos-15
+                      spc: spc-macos-aarch64.tar.gz
+                      spc_sha256: acf2f25d56d0cbf8e65aa82e5054fef555f7be7c5c38046c6e0819f266d83225
+                    - name: macos-x86_64
+                      runner: macos-15-intel
+                      spc: spc-macos-x86_64.tar.gz
+                      spc_sha256: e8b798048f62ca4960764196543b60ae703f7174aa418824cf542aeec1d2cd6a
+                    - name: linux-x86_64
+                      runner: ubuntu-24.04
+                      spc: spc-linux-x86_64.tar.gz
+                      spc_sha256: 523ba4279c54c7a377156c0dd3a36adf92ee64b01e9a7f5e9e2ec084b8e458e5
+                    - name: linux-arm64
+                      runner: ubuntu-24.04-arm
+                      spc: spc-linux-aarch64.tar.gz
+                      spc_sha256: 675a3840dcdc4ed041fe20eaa54310ce019a9984c1c03951df9ec66df5795213
+                    - name: windows-x86_64
+                      runner: windows-2022
+                      spc: spc-windows-x64.exe
+                      spc_sha256: 425b54ab857e21409c1fd9b818899ffebabd1e2817ef0a0ed5ae8a3d9f5b463b
+                      suffix: .exe
+        defaults:
+            run:
+                shell: bash
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - name: Download PHAR
+              uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+              with:
+                  name: phar
+                  path: build
+
+            - name: Install static-php-cli
+              run: |
+                  mkdir -p spc-bin
+                  curl -fsSL -o "spc-bin/${{ matrix.spc }}" "https://github.com/crazywhalecc/static-php-cli/releases/download/${SPC_VERSION}/${{ matrix.spc }}"
+                  actual=$(openssl dgst -sha256 -r "spc-bin/${{ matrix.spc }}" | cut -d' ' -f1)
+                  [ "$actual" = "${{ matrix.spc_sha256 }}" ] || { echo "Checksum mismatch for ${{ matrix.spc }}: $actual" >&2; exit 1; }
+                  case "${{ matrix.spc }}" in
+                      *.tar.gz) tar -xzf "spc-bin/${{ matrix.spc }}" -C spc-bin ;;
+                      *.exe) mv "spc-bin/${{ matrix.spc }}" spc-bin/spc.exe ;;
+                  esac
+                  echo "$PWD/spc-bin" >> "$GITHUB_PATH"
+
+            - name: Cache sources
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+              with:
+                  path: downloads
+                  # The workflow file holds the PHP version and extension list; cache keys must not contain commas.
+                  key: spc-${{ matrix.name }}-${{ hashFiles('.github/workflows/release.yml') }}
+
+            - name: Prepare build environment
+              run: spc doctor --auto-fix
+
+            - name: Download sources
+              env:
+                  # spc lists releases via the GitHub API; anonymous calls hit the shared rate limit.
+                  GITHUB_TOKEN: ${{ github.token }}
+              run: spc download --with-php="${PHP_VERSION}" --for-extensions="${PHP_EXTENSIONS}" --prefer-pre-built
+
+            - name: Build static PHP (micro)
+              run: |
+                  # spc expects the Windows tar; Git Bash would put GNU tar first, which cannot handle D:\ paths.
+                  if [ "$RUNNER_OS" = Windows ]; then export PATH="/c/Windows/System32:$PATH"; fi
+                  spc build "${PHP_EXTENSIONS}" --build-micro
+
+            - name: Combine PHP and server
+              run: |
+                  mkdir -p dist
+                  spc micro:combine build/lexware-php-mcp.phar -I "display_errors=stderr" --output="dist/lexware-php-mcp-${{ matrix.name }}${{ matrix.suffix }}"
+
+            # SMOKE_TEST_TLS sends one request with an invalid key to the real API (expects HTTP 401),
+            # so HTTPS with the system's CA certificates is tested on every platform.
+            - name: Smoke test
+              env:
+                  SMOKE_TEST_TLS: '1'
+              run: build-tools/smoke-test.sh "dist/lexware-php-mcp-${{ matrix.name }}${{ matrix.suffix }}"
+
+            - name: Smoke test on a clean Debian without PHP
+              if: startsWith(matrix.name, 'linux-')
+              run: |
+                  docker run --rm -v "$PWD:/work:ro" -w /work debian:bookworm-slim sh -c '
+                      set -e
+                      ! command -v php
+                      apt-get update -qq && apt-get install -y -qq --no-install-recommends ca-certificates > /dev/null
+                      SMOKE_TEST_TLS=1 build-tools/smoke-test.sh "dist/lexware-php-mcp-${{ matrix.name }}"
+                  '
+
+            - name: Upload binary
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+              with:
+                  name: binary-${{ matrix.name }}
+                  path: dist/lexware-php-mcp-${{ matrix.name }}${{ matrix.suffix }}
+                  if-no-files-found: error
+
+    extension:
+        name: Claude Desktop extensions
+        needs: binary
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - name: Download binaries
+              uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+              with:
+                  pattern: binary-*
+                  path: dist
+                  merge-multiple: true
+
+            - name: Package extensions
+              run: |
+                  build-tools/package-mcpb.sh darwin dist/lexware-php-mcp-macos.mcpb \
+                      dist/lexware-php-mcp-macos-arm64 dist/lexware-php-mcp-macos-x86_64
+                  build-tools/package-mcpb.sh win32 dist/lexware-php-mcp-windows.mcpb \
+                      dist/lexware-php-mcp-windows-x86_64.exe
+
+            - name: Upload extensions
+              uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+              with:
+                  name: extensions
+                  path: dist/*.mcpb
+                  if-no-files-found: error
+
+    release:
+        name: Draft GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        needs: extension
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - name: Download all files
+              uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+              with:
+                  path: dist
+                  merge-multiple: true
+
+            - name: Checksums
+              working-directory: dist
+              run: sha256sum -- * > SHA256SUMS
+
+            - name: Attach files to release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  TAG: ${{ github.ref_name }}
+              run: |
+                  gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1 \
+                      || gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --verify-tag --title "$TAG" --generate-notes
+                  gh release upload "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --clobber
