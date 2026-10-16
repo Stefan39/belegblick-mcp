@@ -1,6 +1,5 @@
 {
     "$schema": "https://raw.githubusercontent.com/box-project/box/main/res/schema.json",
     "output": "build/lexware-php-mcp.phar",
-    "check-requirements": false,
-    "git": "git-version"
+    "check-requirements": false
 }
