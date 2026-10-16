@@ -78,6 +78,9 @@ Nothing else has to be installed; the download contains everything, PHP included
    open *Settings > Extensions > Advanced settings > Install Extension…* in Claude Desktop and pick the file.
 3. Click *Install* and paste your API key when asked. Claude Desktop stores it in its secure storage;
    it does not end up in a configuration file.
+   Claude Desktop shows a warning before installing because the extension is not signed. Signing costs
+   money for a certificate, which this free project does without; the code is open for review on GitHub.
+   Confirm with *Install*.
 4. Make sure the extension is switched on, then ask: *"Which invoices are overdue?"*
 
 To update, download the new `.mcpb` and install it the same way.

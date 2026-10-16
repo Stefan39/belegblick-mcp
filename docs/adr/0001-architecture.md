@@ -119,8 +119,11 @@ Desktop) cannot be expected to install PHP 8.4 and Composer.
   (invalid key, expects HTTP 401); the Linux binaries additionally in a clean Debian container without PHP.
 - Static OpenSSL only knows its compile-time default `/etc/ssl/cert.pem`. `CaBundle` falls back to the
   distribution bundle on Linux and the Windows certificate store; regular PHP installations are untouched.
-- Binaries are not code-signed or notarised (Apple Developer Program: 99 EUR/year). The README explains
-  removing the quarantine flag for the raw macOS binary. Signing is a separate decision.
+- Binaries and extensions are not code-signed or notarised. Decided by Stefan on 2026-10-16: no signing
+  for now, because a code-signing certificate (and the Apple Developer Program, 99 EUR/year) costs money
+  this free project does not have. Consequence: Claude Desktop warns before installing the extension, and
+  Gatekeeper blocks the raw macOS binary until the quarantine flag is removed. The README explains both.
+  Revisit if the warning demonstrably costs users.
 - Windows builds are tested in CI only; the maintainer has no Windows machine.
 
 ## Consequences
