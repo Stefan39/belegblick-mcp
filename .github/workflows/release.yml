@@ -124,7 +124,8 @@ jobs:
               uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: downloads
-                  key: spc-${{ matrix.name }}-${{ env.SPC_VERSION }}-${{ env.PHP_VERSION }}-${{ env.PHP_EXTENSIONS }}
+                  # The workflow file holds the PHP version and extension list; cache keys must not contain commas.
+                  key: spc-${{ matrix.name }}-${{ hashFiles('.github/workflows/release.yml') }}
 
             - name: Prepare build environment
               run: spc doctor --auto-fix
